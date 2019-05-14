@@ -1,6 +1,7 @@
 import numpy as np 
 
 def init_gmedoid(k_cluster, n_views, n_exemp):
+
 	g_medoid_vector = []
 	while len(g_medoid_vector) < k_cluster*n_views:
 		x = np.random.randint(1,(n_exemp+1))
@@ -16,12 +17,10 @@ def init_gmedoid(k_cluster, n_views, n_exemp):
 
 def init_weights(k_cluster, n_views):
 	
-	return [[1]*k_cluster]*n_views
-
-
-
+	return [[1.]*k_cluster]*n_views
 
 
 if __name__=="__main__":
 	print(init_gmedoid(10, 3, 2000))
 	print(init_weights(10,3))
+	
