@@ -25,7 +25,7 @@ def adequacy(v, m, diss_matrices):
 if __name__ == '__main__':
 	np.random.seed(42)
 
-	diss_matrices = np.random.rand(3,9,9) 
+	diss_matrices = np.random.rand(3,9,9)
 
 
 	G = [[7, 8, 3],[4, 5, 6]]

@@ -3,21 +3,22 @@ import numpy as np
 def weighted_dist(lmbd, ex_i, ex_g, diss_matrices):
 	"""
 	"""
-	sum = 0
+	wsum = 0
 	for j in range(len(diss_matrices)):
-		sum += lmbd[j] * np.linalg.norm(np.array(diss_matrices[j][ex_i]) - np.array(diss_matrices[j][ex_g[j]]))
-	return sum
+		wsum += lmbd[j] * np.l
+		inalg.norm(np.array(diss_matrices[j][ex_i]) - np.array(diss_matrices[j][ex_g[j]]))
+	return wsum
 
 def fuzzy_unit(i, k, lambda_matrix, g_matrix, diss_matrices, K, m):
 	"""
 	"""
-	sum = 0
+	fsum = 0
 	for h in range(K):
 		a = weighted_dist(lambda_matrix[k], i, g_matrix[k], diss_matrices)
 		b = weighted_dist(lambda_matrix[h], i, g_matrix[h], diss_matrices)
-		sum += (a/b)**(1/(m-1))
+		fsum += (a/b)**(1/(m-1))
 
-	return 1/sum
+	return 1/fsum
 
 def fuzzy_matrix(lambda_matrix, g_matrix, diss_matrices, K, m):
 	"""

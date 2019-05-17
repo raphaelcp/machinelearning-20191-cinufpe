@@ -14,7 +14,6 @@ def arg_min(diss_matrix, U, k, m):
 
 	return amin
 
-
 # def medioid_vector_selection(diss_matrices):
 		
 
@@ -38,4 +37,5 @@ if __name__ == '__main__':
 	k = 1
 	m = 1.6
 
+	print(diss_matrices)
 	print(arg_min(diss_matrices[0], U, k, m))
