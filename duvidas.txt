@@ -1,0 +1,5 @@
+1 - a matrix de prototipos(g mediode) os números deve ser unicos em toda a matrix ou em cada linha?
+
+2 - na segunda questao pode usar o naive bayes da biblioteca?
+
+
