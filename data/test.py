@@ -13,4 +13,4 @@ for file in ('mfeat-fac', 'mfeat-fou', 'mfeat-kar'):
 	print(np.array(data_test).shape)
 
 	# np.array(data_test)
-	np.savetxt(file + '-test', data_test, delimiter=",")
+	np.savetxt(file + '-test', data_test)
