@@ -13,6 +13,7 @@ def sum_uk(D, U, k, m, g):
 
 def relevance_weights(D_matrices, G, U, k, j, m):
 	"""
+	eq 5
 	"""
 	p = len(D_matrices)
 	prod = 1
@@ -22,6 +23,9 @@ def relevance_weights(D_matrices, G, U, k, j, m):
 	return prod**(1/p)/sum_uk(D_matrices[j], U, k, m, G[k][j])
 
 def vectors_relevance_weights(D_matrices, G, U, m):
+	"""
+	step 2 - algoritmo
+	"""
 	K = len(G)
 	p = len(D_matrices)
 	new_W = np.zeros((K, p))
@@ -77,6 +81,3 @@ if __name__ == "__main__":
 			tmp *= new_W[k][j]
 		# print(new_W[k])
 		print(tmp)
-
-
-

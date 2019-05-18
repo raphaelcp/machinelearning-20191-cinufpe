@@ -20,6 +20,9 @@ def arg_min(diss_matrix, U, k, m):
 	return ind_l
 
 def medioid_vector_selection(diss_matrices, U, m):
+	"""
+	step 1 - algoritmo
+	"""
 	p = len(diss_matrices)
 	K = len(U[0])
 	new_G = np.zeros((K, p), dtype=int)
@@ -27,7 +30,6 @@ def medioid_vector_selection(diss_matrices, U, m):
 	for k in range(K):
 		for j in range(p):
 			new_G[k][j] = arg_min(diss_matrices[k], U, k, m)
-
 
 	return new_G
 
