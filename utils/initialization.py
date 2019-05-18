@@ -1,13 +1,17 @@
 import numpy as np
 
 def init_gmedoid(k_cluster, n_views, n_exemp):
-	g_medoid_vector = [[]]*k_cluster
-	for i in range(k_cluster):
-		arr = np.array(range(n_views))
-		np.random.shuffle(arr)
-		g_medoid_vector[i] = arr
+	g_medoid_matrix = [[]]*n_views
+	for i in range(n_views):
+		g_medoid_vector = []
+		while len(g_medoid_vector) < k_cluster:
+			x = np.random.randint(1,(n_exemp+1))
+			if x not in g_medoid_vector:
+				g_medoid_vector.append(x)
 
-	return np.array(g_medoid_vector)
+		g_medoid_matrix[i] = g_medoid_vector
+
+	return np.array(g_medoid_matrix).T
 
 	# g_medoid_vector = []
 	# while len(g_medoid_vector) < k_cluster*n_views:
