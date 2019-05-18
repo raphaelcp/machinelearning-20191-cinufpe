@@ -1,31 +1,31 @@
 import numpy as np
-from fuzzy_partition import weighted_dist
+from utils.fuzzy_partition import weighted_dist
 
 
 # v= (G,W,U)
-def adequacy(v, m, diss_matrices):
+def adequacy(v, m, D_matrices):
 	"""
 	Função calcula resultado de função objetivo, a ser minimizada. Onde:
-		v[0] = G, matriz de protótipos 
-		v[1] = W, matriz de pesos  
+		v[0] = G, matriz de protótipos
+		v[1] = W, matriz de pesos
 		v[2] = U, matriz de grau de pertencimento
 		m = 1.6,
-		diss_matrices = matrizes de dissimilaridade  
+		D_matrices = matrizes de dissimilaridade
 	"""
 	K = len(v[1])
 	n = len(v[2])
-	sum = 0;
+	asum = 0;
 
 	for k in range(K):
 		for i in range(n):
-			sum += v[2][i][k]**m * weighted_dist(v[1][k], i, v[0][k], diss_matrices)
-	
-	return sum
+			asum += v[2][i][k]**m * weighted_dist(v[1][k], i, v[0][k], D_matrices)
+
+	return asum
 
 if __name__ == '__main__':
 	np.random.seed(42)
 
-	diss_matrices = np.random.rand(3,9,9)
+	D_matrices = np.random.rand(3,9,9)
 
 
 	G = [[7, 8, 3],[4, 5, 6]]
@@ -41,4 +41,4 @@ if __name__ == '__main__':
 	]
 	v=[G,W,U]
 
-	print(adequacy(v, 1.6, diss_matrices))
+	print(adequacy(v, 1.6, D_matrices))

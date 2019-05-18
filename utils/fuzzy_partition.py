@@ -29,9 +29,10 @@ def fuzzy_matrix(W, G, D_matrices, K, m):
 	"""
 	calculo da eq 6
 	"""
-	U = np.zeros((len(D_matrices), K))
+	n = len(D_matrices[0])
+	U = np.zeros((n, K))
 
-	for i in range(len(D_matrices)):
+	for i in range(n):
 		for k in range(K):
 			U[i][k] = fuzzy_unit(i, k, W, G, D_matrices, K, m)
 

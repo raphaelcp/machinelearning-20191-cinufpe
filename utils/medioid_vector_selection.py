@@ -1,17 +1,17 @@
 import numpy as np
 
-def arg_min(diss_matrix, U, k, m):
+def arg_min(D, U, k, m):
 	"""
 	eq 4
 	"""
-	n = len(diss_matrix)
+	n = len(D)
 	amin = np.inf
 	ind_l = -1
 
 	for h in range(n):
 		dsum = 0
 		for i in range(n):
-			dsum += U[i][k]**m * diss_matrix[i][h]
+			dsum += U[i][k]**m * D[i][h]
 
 		if amin > dsum:
 			amin = dsum
@@ -19,17 +19,17 @@ def arg_min(diss_matrix, U, k, m):
 
 	return ind_l
 
-def medioid_vector_selection(diss_matrices, U, m):
+def medioid_vector_selection(D_matrices, U, m):
 	"""
 	step 1 - algoritmo
 	"""
-	p = len(diss_matrices)
+	p = len(D_matrices)
 	K = len(U[0])
 	new_G = np.zeros((K, p), dtype=int)
 
 	for k in range(K):
 		for j in range(p):
-			new_G[k][j] = arg_min(diss_matrices[k], U, k, m)
+			new_G[k][j] = arg_min(D_matrices[j], U, k, m)
 
 	return new_G
 
@@ -37,7 +37,7 @@ def medioid_vector_selection(diss_matrices, U, m):
 if __name__ == '__main__':
 	np.random.seed(42)
 
-	diss_matrices = np.random.rand(3,9,9)
+	D_matrices = np.random.rand(3,9,9)
 	U = [
 		[0.76046769, 0.23953231],
 		[0.86188325, 0.13811675],
@@ -53,6 +53,6 @@ if __name__ == '__main__':
 	k = 1
 	m = 1.6
 
-	# print(diss_matrices[0])
-	# print(arg_min(diss_matrices[0], U, k, m))
-	print(medioid_vector_selection(diss_matrices, U, m))
+	# print(D_matrices[0])
+	# print(arg_min(D_matrices[0], U, k, m))
+	print(medioid_vector_selection(D_matrices, U, m))
