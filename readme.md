@@ -32,6 +32,12 @@
  j          | variavel que percorre as views
  i          | variavel que percorre os exemplos
 
+## Run
+
+```bash
+docker run --rm -v $PWD:/var/www -it faizanbashir/python-datascience:3.6 bash
+```
+
 ## Grupo
 
 - Denisson Leal
