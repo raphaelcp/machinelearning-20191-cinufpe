@@ -20,7 +20,7 @@ def relevance_weights(D_matrices, G, U, k, j, m):
 	for h in range(p):
 		prod *= sum_uk(D_matrices[h], U, k, m, G[k][h])
 
-	return prod**(1/p)/sum_uk(D_matrices[j], U, k, m, G[k][j])
+	return prod**(1./p)/sum_uk(D_matrices[j], U, k, m, G[k][j])
 
 def vectors_relevance_weights(D_matrices, G, U, m):
 	"""

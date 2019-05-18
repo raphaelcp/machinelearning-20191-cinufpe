@@ -21,9 +21,9 @@ def fuzzy_unit(i, k, W, G, D_matrices, K, m):
 	for h in range(K):
 		a = weighted_dist(W[k], i, G[k], D_matrices)
 		b = weighted_dist(W[h], i, G[h], D_matrices)
-		fsum += (a/b)**(1/(m-1))
+		fsum += (a/b)**(1./(m-1))
 
-	return 1/fsum
+	return 1./fsum
 
 def fuzzy_matrix(W, G, D_matrices, K, m):
 	"""
