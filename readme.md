@@ -32,10 +32,18 @@
  j          | variavel que percorre as views
  i          | variavel que percorre os exemplos
 
-## Run
+## Para executar
+
+Inicializacao do container
 
 ```bash
 docker run --rm -v $PWD:/var/www -it faizanbashir/python-datascience:3.6 bash
+```
+
+Rodar projeto
+
+```bash
+python3 question1.py
 ```
 
 ## Grupo
