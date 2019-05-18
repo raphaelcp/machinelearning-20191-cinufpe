@@ -1,13 +1,11 @@
 import numpy as np
 
 from sklearn.preprocessing import scale, minmax_scale
-from scipy.spatial.distance import pdist, squareform
 
 def dissimilarity(data):
-    y = np.array([([np.linalg.norm(x1 - x2) for x2 in data]) for x1 in data], dtype=np.float32)
-    return y
+    return np.array([([np.linalg.norm(x1 - x2) for x2 in data]) for x1 in data], dtype=np.float32)
 
-    
+
 # Normailzação dos dados e matriz de dissimilaridade
 def normalized_dissimilarity(list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')):
 	D_matrices = []
@@ -23,7 +21,7 @@ def normalized_dissimilarity(list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar'))
 		#calcula dissimilaridade
 		D_matrices.append(dissimilarity(data_scaled))
 
-	return D_matrices
+	return np.array(D_matrices)
 
 if __name__ == "__main__":
 	print(normalized_dissimilarity(list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')))
