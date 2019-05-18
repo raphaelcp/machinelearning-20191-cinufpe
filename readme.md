@@ -37,7 +37,7 @@
 Inicializacao do container
 
 ```bash
-docker run --rm -v $PWD:/var/www -it faizanbashir/python-datascience:3.6 bash
+docker run --rm -v "$PWD:/var/www" -it faizanbashir/python-datascience:3.6 bash
 ```
 
 Rodar projeto
