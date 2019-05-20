@@ -7,7 +7,7 @@ for file in ('mfeat-fac', 'mfeat-fou', 'mfeat-kar'):
 	n = len(data)
 
 	for i in range(0, n, 200):
-		for j in range(10):
+		for j in range(20):
 			data_test.append(data[i+j])
 
 	print(np.array(data_test).shape)
