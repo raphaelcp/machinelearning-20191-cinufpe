@@ -10,7 +10,8 @@ def weighted_dist(lmbd, ex_i, ex_g, D_matrices):
 	D_matrices -> matriz das distancias
 	"""
 	wsum = 0
-	for j in range(len(ex_g)):
+	p = len(ex_g)
+	for j in range(p):
 		wsum += lmbd[j] * D_matrices[j][ex_i][ex_g[j]]
 	return wsum
 
