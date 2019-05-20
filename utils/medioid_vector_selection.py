@@ -4,19 +4,27 @@ def arg_min(D, U, k, m):
 	"""
 	eq 4
 	"""
+	# print('init arg_min')
 	n = len(D)
 	amin = np.inf
 	ind_l = -1
 
+	tmp_Uem = np.zeros(n)
+	for i in range(n):
+		tmp_Uem[i] = U[i][k]**m
+
 	for h in range(n):
 		dsum = 0
 		for i in range(n):
-			dsum += U[i][k]**m * D[i][h]
+			dsum += tmp_Uem[i] * D[i][h]
 
+		# print('%f > %f'%(amin, dsum))
 		if amin > dsum:
 			amin = dsum
 			ind_l = h
+			# print('%d - %f'%(ind_l, amin))
 
+	# print('end arg_min')
 	return ind_l
 
 def medioid_vector_selection(D_matrices, U, m):
