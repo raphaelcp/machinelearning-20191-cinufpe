@@ -7,6 +7,7 @@ from utils.medioid_vector_selection import medioid_vector_selection
 from utils.vectors_relevance_weights import vectors_relevance_weights
 from utils.convert_crisp import convert_crisp
 import threading
+import time
 
 def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 	t = 0
@@ -23,21 +24,23 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 	# print(u)
 	while True:
 		t += 1
+		microtime = time.time()
 		print('time %d'%(t))
 
 		G = medioid_vector_selection(D_matrices, U, m)
 		# np.savetxt('output/G'+str(t), G, fmt='%i')
-		# print('calc G')
+		print('calc G %.2f'%(time.time()-microtime))
 
 		W = vectors_relevance_weights(D_matrices, G, U, m)
 		# np.savetxt('output/W'+str(t), W, fmt='%.7f')
-		# print('calc W')
+		print('calc W %.2f'%(time.time()-microtime))
 
 		U = fuzzy_matrix(W, G, D_matrices, K, m)
 		# np.savetxt('output/U'+str(t), U, fmt='%.7f')
-		# print('calc U')
+		print('calc U %.2f'%(time.time()-microtime))
 
 		u.append(adequacy([G, W, U], m, D_matrices))
+		print('calc u %.2f'%(time.time()-microtime))
 
 		if abs(u[t]-u[t-1]) < eps or t >= T:
 			break
