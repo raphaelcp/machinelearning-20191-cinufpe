@@ -1,27 +1,28 @@
 import numpy as np
 
-def weighted_dist(lmbd, ex_i, ex_g, D_matrices):
+def weighted_dist(W, i, G, D_matrices, kh):
 	"""
 	sum de j=1 a p lambda[k][j]*d[j](e[i], g[k][j])
 
 	lmbd -> matriz lambda
-	ex_i -> exemplo i para calc das distancias
+	i -> exemplo i para calc das distancias
 	ex_g -> vetor com a referencia para os representantes
 	D_matrices -> matriz das distancias
 	"""
 	wsum = 0
-	p = len(ex_g)
+	p = D_matrices.shape[0]
 	for j in range(p):
-		wsum += lmbd[j] * D_matrices[j][ex_i][ex_g[j]]
+		wsum += W[kh,j] * D_matrices[j,i,G[kh,j]]
 	return wsum
 
 def fuzzy_unit(i, k, W, G, D_matrices, K, m):
 	"""
 	"""
 	fsum = 0
+
+	a = weighted_dist(W, i, G, D_matrices, k)
 	for h in range(K):
-		a = weighted_dist(W[k], i, G[k], D_matrices)
-		b = weighted_dist(W[h], i, G[h], D_matrices)
+		b = weighted_dist(W, i, G, D_matrices, h)
 		fsum += (a/b)**(1./(m-1))
 
 	return 1./fsum
@@ -30,14 +31,14 @@ def fuzzy_matrix(W, G, D_matrices, K, m):
 	"""
 	calculo da eq 6
 	"""
-	n = len(D_matrices[0])
-	U = np.zeros((n, K))
+	n = D_matrices.shape[1]
+	new_U = np.zeros((n, K))
 
 	for i in range(n):
 		for k in range(K):
-			U[i][k] = fuzzy_unit(i, k, W, G, D_matrices, K, m)
+			new_U[i,k] = fuzzy_unit(i, k, W, G, D_matrices, K, m)
 
-	return U
+	return new_U
 
 if __name__ == "__main__":
 	i = 1

@@ -3,7 +3,7 @@ from utils.fuzzy_partition import weighted_dist
 
 
 # v= (G,W,U)
-def adequacy(v, m, D_matrices):
+def adequacy(v, m, D_matrices, Uem):
 	"""
 	Função calcula resultado de função objetivo, a ser minimizada. Onde:
 		v[0] = G, matriz de protótipos
@@ -18,7 +18,7 @@ def adequacy(v, m, D_matrices):
 
 	for k in range(K):
 		for i in range(n):
-			asum += v[2][i][k]**m * weighted_dist(v[1][k], i, v[0][k], D_matrices)
+			asum += Uem[i,k] * weighted_dist(v[1], i, v[0], D_matrices, k)
 
 	return asum
 

@@ -1,28 +1,28 @@
 import numpy as np
 
-def sum_uk(D, U, k, m, g):
+def sum_uk(D_matrices, hj, tmp_Uem, k, g):
 	"""
 	"""
-	n = len(D)
+	n = D_matrices.shape[1]
 
 	dsum = 0
 	for i in range(n):
-		dsum += U[i][k]**m * D[i][g]
+		dsum += tmp_Uem[i,k] * D_matrices[hj,i,g]
 
 	return dsum
 
-def relevance_weights(D_matrices, G, U, k, j, m):
+def relevance_weights(D_matrices, G, tmp_Uem, k, j):
 	"""
 	eq 5
 	"""
 	p = len(D_matrices)
 	prod = 1
 	for h in range(p):
-		prod *= sum_uk(D_matrices[h], U, k, m, G[k][h])
+		prod *= sum_uk(D_matrices, h, tmp_Uem, k, G[k,h])
 
-	return prod**(1./p)/sum_uk(D_matrices[j], U, k, m, G[k][j])
+	return (prod**(1./p))/sum_uk(D_matrices, j, tmp_Uem, k, G[k,j])
 
-def vectors_relevance_weights(D_matrices, G, U, m):
+def vectors_relevance_weights(D_matrices, G, Uem, m):
 	"""
 	step 2 - algoritmo
 	"""
@@ -32,7 +32,7 @@ def vectors_relevance_weights(D_matrices, G, U, m):
 
 	for k in range(K):
 		for j in range(p):
-			new_W[k][j] = relevance_weights(D_matrices, G, U, k, j, m)
+			new_W[k,j] = relevance_weights(D_matrices, G, Uem, k, j)
 
 	return new_W;
 
