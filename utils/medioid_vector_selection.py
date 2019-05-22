@@ -4,18 +4,7 @@ def arg_min(D_matrices, j, tmp_Uem, k):
 	"""
 	eq 4
 	"""
-	n = D_matrices.shape[1]
-	amin = np.inf
-	ind_l = -1
-
-	for h in range(n):
-		dsum = np.sum(tmp_Uem[:,k] * D_matrices[j,:,h])
-
-		if amin > dsum:
-			amin = dsum
-			ind_l = h
-
-	return ind_l
+	return (tmp_Uem[:,k] * D_matrices[j,:,:]).sum(axis=1).argmin()
 
 def medioid_vector_selection(D_matrices, Uem, m):
 	"""
