@@ -11,8 +11,8 @@ import time
 
 def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 	t = 0
-	p = len(D_matrices)
-	n = len(D_matrices[0])
+	p = D_matrices.shape[0]
+	n = D_matrices.shape[1]
 
 	G = init_gmedoid(K, p, n)
 	W = init_weights(K, p)
@@ -36,21 +36,24 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 		G = medioid_vector_selection(D_matrices, Uem, m)
 		# np.savetxt('output/G'+str(t), G, fmt='%i')
 		print('- calc G %.3f'%(time.time()-microtime))
+		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		W = vectors_relevance_weights(D_matrices, G, Uem, m)
 		# np.savetxt('output/W'+str(t), W, fmt='%.7f')
 		print('- calc W %.3f'%(time.time()-microtime))
+		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		U = fuzzy_matrix(W, G, D_matrices, K, m)
 		# np.savetxt('output/U'+str(t), U, fmt='%.7f')
 		print('- calc U %.3f'%(time.time()-microtime))
+		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		u.append(adequacy([G, W, U], m, D_matrices, Uem))
 		print('- calc u %.3f'%(time.time()-microtime))
-
+		# print(u)
 		if abs(u[t]-u[t-1]) < eps or t >= T:
 			break
 
