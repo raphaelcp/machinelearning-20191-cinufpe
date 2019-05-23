@@ -17,7 +17,6 @@ def adjusted_rand_index(crisp_matrix):
 	new_crisp = np.zeros(n)
 	for i in range(n):
 		new_crisp[i] = np.argmax(crisp_matrix[i])
-	print(new_crisp)
 	return adjusted_rand_score(new_crisp, true_labels(crisp_matrix.shape[0], crisp_matrix.shape[1]))
 
 if __name__ == '__main__':
