@@ -6,6 +6,7 @@ from utils.adequacy_function import adequacy
 from utils.medioid_vector_selection import medioid_vector_selection
 from utils.vectors_relevance_weights import vectors_relevance_weights
 from utils.convert_crisp import convert_crisp
+from utils.rand_index import adjusted_rand_index
 import threading
 import time
 
@@ -105,6 +106,9 @@ def main():
 		if i == 0 or out['performance'] < best_out['performance']:
 			best_out = out.copy()
 			save_result(best_out, 'best')
+
+	crisp = convert_crisp(best_out['U'])
+	print('Indice de Rand Corrigido', adjusted_rand_index(crisp))
 
 
 if __name__ == '__main__':
