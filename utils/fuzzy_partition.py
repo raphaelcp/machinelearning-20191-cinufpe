@@ -15,7 +15,7 @@ def weighted_dist(W, i, G, D_matrices, kh):
 		wsum += W[kh,j] * D_matrices[j,i,G[kh,j]]
 	return wsum
 
-def fuzzy_unit(i, k, W, G, D_matrices, K, m):
+def fuzzy_unit(i, k, W, G, D_matrices, K, m, eps):
 	"""
 	"""
 	fsum = 0
@@ -23,11 +23,13 @@ def fuzzy_unit(i, k, W, G, D_matrices, K, m):
 	a = weighted_dist(W, i, G, D_matrices, k)
 	for h in range(K):
 		b = weighted_dist(W, i, G, D_matrices, h)
+		if b < eps:
+			return 0
 		fsum += (a/b)**(1./(m-1))
 
 	return 1./fsum
 
-def fuzzy_matrix(W, G, D_matrices, K, m):
+def fuzzy_matrix(W, G, D_matrices, K, m, old_U, eps=10**(-10)):
 	"""
 	calculo da eq 6
 	"""
@@ -36,7 +38,10 @@ def fuzzy_matrix(W, G, D_matrices, K, m):
 
 	for i in range(n):
 		for k in range(K):
-			new_U[i,k] = fuzzy_unit(i, k, W, G, D_matrices, K, m)
+			tmp = fuzzy_unit(i, k, W, G, D_matrices, K, m, eps)
+			if tmp == 0:
+				return old_U
+			new_U[i,k] = tmp
 
 	return new_U
 
@@ -64,4 +69,4 @@ if __name__ == "__main__":
 	# print(weighted_dist(W[k], i, G[k], D_matrices))
 	# print(fuzzy_partition(1, 0, W, G, D_matrices, 2, 1.6)+
 	# 	fuzzy_partition(1, 1, W, G, D_matrices, 2, 1.6))
-	print(fuzzy_matrix(W, G, D_matrices, 2, 1.6))
+	print(fuzzy_matrix(W, G, D_matrices, 2, 1.6), [])

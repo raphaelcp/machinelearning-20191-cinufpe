@@ -16,7 +16,7 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 
 	G = init_gmedoid(K, p, n)
 	W = init_weights(K, p)
-	U = fuzzy_matrix(W, G, D_matrices, K, m)
+	U = fuzzy_matrix(W, G, D_matrices, K, m, [])
 	# print(U)
 	# exit()
 
@@ -45,7 +45,7 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
-		U = fuzzy_matrix(W, G, D_matrices, K, m)
+		U = fuzzy_matrix(W, G, D_matrices, K, m, U)
 		# np.savetxt('output/U'+str(t), U, fmt='%.7f')
 		print('- calc U %.3f'%(time.time()-microtime))
 		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
@@ -84,14 +84,23 @@ def save_result(obj, it):
 
 def main():
 	D_matrices = normalized_dissimilarity(
-		list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
+		# list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
 		# list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')
+		list_files=(
+			'ecoli/ecoli.data-1',
+			'ecoli/ecoli.data-2',
+			'ecoli/ecoli.data-3',
+			'ecoli/ecoli.data-4',
+			'ecoli/ecoli.data-5',
+			'ecoli/ecoli.data-6',
+			'ecoli/ecoli.data-7',
+		)
 	)
 
 	best_out = {}
-	for i in range(100):
+	for i in range(2):
 		print('# run %d'%(i+1))
-		out = MVFCMddV(D_matrices)
+		out = MVFCMddV(D_matrices, K=8)
 		save_result(out, '%02d'%(i))
 		if i == 0 or out['performance'] < best_out['performance']:
 			best_out = out.copy()
