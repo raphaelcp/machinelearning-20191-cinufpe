@@ -11,6 +11,8 @@ def normalized_dissimilarity(list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar'))
 
 		# carrega os dados
 		data = np.recfromtxt('data/' + file)
+		if len(data.shape) == 1:
+			data = data.reshape(data.shape[0], 1)
 
 		# aplica a normalização
 		data = data.astype(float)
