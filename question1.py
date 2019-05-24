@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.metrics.cluster import adjusted_rand_score
 from utils.normalized_dissimilarity import normalized_dissimilarity
 from utils.initialization import *
 from utils.fuzzy_partition import fuzzy_matrix
@@ -6,7 +7,8 @@ from utils.adequacy_function import adequacy
 from utils.medioid_vector_selection import medioid_vector_selection
 from utils.vectors_relevance_weights import vectors_relevance_weights
 from utils.convert_crisp import convert_crisp
-from utils.rand_index import adjusted_rand_index
+from utils.rand_index import *
+from utils.crisp_obj import *
 import threading
 import time
 
@@ -15,12 +17,13 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 	p = D_matrices.shape[0]
 	n = D_matrices.shape[1]
 
+	#Inicialização dos dados
 	G = init_gmedoid(K, p, n)
 	W = init_weights(K, p)
 	U = fuzzy_matrix(W, G, D_matrices, K, m)
 	# print(U)
 	# exit()
-
+	
 	u = [];
 	u.append(adequacy([G, W, U], m, D_matrices, U**m))
 	# print(u)
@@ -84,11 +87,13 @@ def save_result(obj, it):
 
 
 def main():
-	D_matrices = normalized_dissimilarity(
-		 list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
-		#list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')
-	)
 
+	D_matrices = normalized_dissimilarity(
+		 #list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
+		 list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')
+	)
+	n = D_matrices[0].shape[0]
+	K = 10
 	best_out = {}
 	for i in range(100):
 		print('# run %d'%(i+1))
@@ -99,7 +104,16 @@ def main():
 			save_result(best_out, 'best')
 
 	crisp = convert_crisp(best_out['U'])
-	print('Indice de Rand Corrigido', adjusted_rand_index(crisp))
+	crisp_vector = new_crisp(crisp)
+	print(crisp_obj(crisp_vector, K))
+	crisp_true = true_labels(n, K)
+	print(crisp_true)
+	print('Indice de Rand Corrigido', adjusted_rand_score(crisp_vector, crisp_true))
+
+
+
+	
+	
 
 
 if __name__ == '__main__':
