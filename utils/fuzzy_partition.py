@@ -9,7 +9,7 @@ def weighted_dist(W, i, G, D_matrices, kh):
 	ex_g -> vetor com a referencia para os representantes
 	D_matrices -> matriz das distancias
 	"""
-	wsum = 0
+	wsum = 0.
 	p = D_matrices.shape[0]
 	for j in range(p):
 		wsum += W[kh,j] * D_matrices[j,i,G[kh,j]]
@@ -23,8 +23,6 @@ def fuzzy_unit(i, k, W, G, D_matrices, K, m, eps):
 	a = weighted_dist(W, i, G, D_matrices, k)
 	for h in range(K):
 		b = weighted_dist(W, i, G, D_matrices, h)
-		if b < eps:
-			return 0
 		fsum += (a/b)**(1./(m-1))
 
 	return 1./fsum
@@ -38,10 +36,7 @@ def fuzzy_matrix(W, G, D_matrices, K, m, old_U, eps=10**(-10)):
 
 	for i in range(n):
 		for k in range(K):
-			tmp = fuzzy_unit(i, k, W, G, D_matrices, K, m, eps)
-			if tmp == 0:
-				return old_U
-			new_U[i,k] = tmp
+			new_U[i,k] = fuzzy_unit(i, k, W, G, D_matrices, K, m, eps)
 
 	return new_U
 
