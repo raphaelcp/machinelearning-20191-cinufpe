@@ -1,10 +1,11 @@
-import numpy as np 
+import numpy as np
 from sklearn.metrics.cluster import adjusted_rand_score
 from utils.convert_crisp import convert_crisp
+from scipy.misc import comb
 
 
 def true_labels(n, K):
-	tl = np.zeros((n))
+	tl = np.zeros(n, dtype=int)
 	qtd_by_class = int(n/K)
 	for i in range(n):
 		# print(i, int(i/K))
@@ -14,16 +15,34 @@ def true_labels(n, K):
 
 def adjusted_rand_index(crisp_matrix):
 	n = len(crisp_matrix)
-	new_crisp = np.zeros(n)
+	new_crisp = np.zeros(n, dtype=int)
 	for i in range(n):
 		new_crisp[i] = np.argmax(crisp_matrix[i])
-	return adjusted_rand_score(new_crisp, true_labels(crisp_matrix.shape[0], crisp_matrix.shape[1]))
+	return adjusted_rand_score(true_labels(crisp_matrix.shape[0], crisp_matrix.shape[1]), new_crisp)
+
+def rand_index(crisp_matrix):
+	clusters = true_labels(crisp_matrix.shape[0], crisp_matrix.shape[1])
+	n = len(crisp_matrix)
+	classes = np.zeros(n, dtype=int)
+	for i in range(n):
+		classes[i] = np.argmax(crisp_matrix[i])
+
+	tp_plus_fp = comb(np.bincount(clusters), 2).sum()
+	tp_plus_fn = comb(np.bincount(classes), 2).sum()
+	A = np.c_[(clusters, classes)]
+	tp = sum(comb(np.bincount(A[A[:, 0] == i, 1]), 2).sum()
+		for i in set(clusters))
+	fp = tp_plus_fp - tp
+	fn = tp_plus_fn - tp
+	tn = comb(len(A), 2) - tp - fp - fn
+
+	return (tp + tn) / (tp + fp + fn + tn)
 
 if __name__ == '__main__':
 	# print(true_labels(6, 3))
 
 	crisp_matrix = np.array([
-		[1,0,0], 
+		[1,0,0],
 		[1,0,0],
 		[1,0,0],
 		[0,1,0],
