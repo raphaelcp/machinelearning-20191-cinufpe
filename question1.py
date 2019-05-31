@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics.cluster import adjusted_rand_score
-from utils.normalized_dissimilarity import normalized_dissimilarity
+from utils.normalized_dissimilarity import *
 from utils.initialization import *
 from utils.fuzzy_partition import fuzzy_matrix
 from utils.adequacy_function import adequacy
@@ -12,7 +12,7 @@ from utils.crisp_obj import *
 import threading
 import time
 
-def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
+def MVFCMddV(D_matrices, K, m=1.6, eps=10**(-10), T=150):
 	t = 0
 	p = D_matrices.shape[0]
 	n = D_matrices.shape[1]
@@ -33,30 +33,30 @@ def MVFCMddV(D_matrices, K=10, m=1.6, eps=10**(-10), T=150):
 
 		microtime = time.time()
 		Uem = U**m
-		print('- calc Uem %.3f'%(time.time()-microtime))
+		# print('- calc Uem %.3f'%(time.time()-microtime))
 
 		# print(G)
 		microtime = time.time()
 		G = medioid_vector_selection(D_matrices, Uem, m)
 		# np.savetxt('output/G'+str(t), G, fmt='%i')
-		print('- calc G %.3f'%(time.time()-microtime))
+		# print('- calc G %.3f'%(time.time()-microtime))
 		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		W = vectors_relevance_weights(D_matrices, G, Uem, m)
 		# np.savetxt('output/W'+str(t), W, fmt='%.7f')
-		print('- calc W %.3f'%(time.time()-microtime))
+		# print('- calc W %.3f'%(time.time()-microtime))
 		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		U = fuzzy_matrix(W, G, D_matrices, K, m, U)
 		# np.savetxt('output/U'+str(t), U, fmt='%.7f')
-		print('- calc U %.3f'%(time.time()-microtime))
+		# print('- calc U %.3f'%(time.time()-microtime))
 		# u.append(adequacy([G, W, U], m, D_matrices, Uem))
 
 		microtime = time.time()
 		u.append(adequacy([G, W, U], m, D_matrices, Uem))
-		print('- calc u %.3f'%(time.time()-microtime))
+		# print('- calc u %.3f'%(time.time()-microtime))
 		# print(u)
 		if abs(u[t]-u[t-1]) < eps or t >= T:
 			break
@@ -89,8 +89,8 @@ def save_result(obj, it):
 def main():
 
 	D_matrices = normalized_dissimilarity(
-		# list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
-		list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')
+		 list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
+		#list_files=('mfeat-fac-test-2', 'mfeat-fou-test-2', 'mfeat-kar-test-2')
 		# list_files=(
 		# 	'ecoli/ecoli.data-1',
 		# 	'ecoli/ecoli.data-2',
@@ -104,11 +104,20 @@ def main():
 	n = D_matrices[0].shape[0]
 	K = 10
 	best_out = {}
-	for i in range(2):
+	for i in range(100):
 		print('# run %d'%(i+1))
-		out = MVFCMddV(D_matrices, K=8)
+		out = MVFCMddV(D_matrices, K)
 		save_result(out, '%02d'%(i))
-		if i == 0 or out['performance'] < best_out['performance']:
+
+		crisp = convert_crisp(out['U'])
+		crisp_vector = new_crisp(crisp)
+		if np.unique(crisp_vector).shape[0] < 10:
+			print('nao rolou')
+			continue
+		else:
+			print('rolouu')
+
+		if len(best_out) == 0 or out['performance'] < best_out['performance']:
 			best_out = out.copy()
 			save_result(best_out, 'best')
 
@@ -116,7 +125,9 @@ def main():
 	crisp_vector = new_crisp(crisp)
 	print(crisp_obj(crisp_vector, K))
 	crisp_true = true_labels(n, K)
-	print(crisp_true)
+	# np.savetxt('crisp_true',crisp_true, fmt='%i')
+	np.savetxt('crisp_vector',crisp_vector, fmt='%i')
+	print(crisp_vector)
 	print('Indice de Rand Corrigido', adjusted_rand_score(crisp_vector, crisp_true))
 
 
