@@ -12,6 +12,7 @@ if not sys.warnoptions:
 
 
 def main():
+	np.random.seed(42)
 	L = 3 #numero de views
 	K = 10 #numero de classes
 
@@ -21,8 +22,8 @@ def main():
 	)
 	# print(D_matrices[0])
 
-	#true_labels = np.recfromtxt('crisp_vector')
-	true_labels = np.recfromtxt('data/preprocessed/true_labels.txt')
+	true_labels = np.recfromtxt('crisp_vector')
+	# true_labels = np.recfromtxt('data/preprocessed/true_labels.txt')
 
 	# print(true_labels)
 
@@ -41,9 +42,9 @@ def main():
 	k_range = list(range(1,31))
 	param_grid = dict(n_neighbors=k_range)
 
-	grid_1 = GridSearchCV(kb_1, param_grid, cv=10, scoring='accuracy', n_jobs=4)
-	grid_2 = GridSearchCV(kb_2, param_grid, cv=10, scoring='accuracy', n_jobs=4)
-	grid_3 = GridSearchCV(kb_3, param_grid, cv=10, scoring='accuracy', n_jobs=4)
+	grid_1 = GridSearchCV(kb_1, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
+	grid_2 = GridSearchCV(kb_2, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
+	grid_3 = GridSearchCV(kb_3, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
 
 	grid_1.fit(D_matrices[0], true_labels)
 	grid_2.fit(D_matrices[1], true_labels)
@@ -60,12 +61,10 @@ def main():
 
 	for train_index, test_index in rskf.split(D_matrices[0], true_labels):
 
-		# for view in range(D_matrices.shape[0]):
 		matrix_train_1, matrix_test_1 = D_matrices[0][train_index], D_matrices[0][test_index]
 		matrix_train_2, matrix_test_2 = D_matrices[1][train_index], D_matrices[1][test_index]
 		matrix_train_3, matrix_test_3 = D_matrices[2][train_index], D_matrices[2][test_index]
 		true_labels_train, true_labels_test = true_labels[train_index], true_labels[test_index]
-
 
 		# print('view: ', view+1)
 		# matrix = D_matrices[view]
@@ -89,7 +88,6 @@ def main():
 		pred_2 = gb_2.predict_proba(matrix_test_2)
 		pred_3 = gb_3.predict_proba(matrix_test_3)
 
-		print(pred_2.shape)
 		gb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
 		# print(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3))
 
@@ -109,19 +107,12 @@ def main():
 		pred_3 = kb_3.predict_proba(matrix_test_3)
 
 		kb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
-		print(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3))
 
 		#score dos ensembles
 		score = np.equal(kb_ensemble, true_labels_test).sum() / true_labels_test.shape[0]
 		print("%.5f"%score);
 
 
-		# print(gb_ensemble); exit()
-
-			# gb_score = gb.score(matrix_test, true_labels_test)
-			# gb_scores.append(gb_score)
-
-		# print(len(gb_scores), np.mean(gb_scores), np.std(gb_scores))
 
 if __name__ == '__main__':
 	main()
