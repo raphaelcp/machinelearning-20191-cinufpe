@@ -12,6 +12,12 @@ from utils.crisp_obj import *
 import threading
 import time
 
+def min_repeat(arr, K=10):
+	counter = np.zeros(K, dtype=int)
+	for item in arr:
+		counter[item] += 1
+	return counter.min()
+
 def MVFCMddV(D_matrices, K, m=1.6, eps=10**(-10), T=150):
 	t = 0
 	p = D_matrices.shape[0]
@@ -111,7 +117,7 @@ def main():
 
 		crisp = convert_crisp(out['U'])
 		crisp_vector = new_crisp(crisp)
-		if np.unique(crisp_vector).shape[0] < 10:
+		if min_repeat(crisp_vector) < 10:
 			print('nao rolou')
 			continue
 		else:
