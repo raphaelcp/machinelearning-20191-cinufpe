@@ -7,6 +7,7 @@ from utils.convert_crisp import convert_crisp
 from sklearn.metrics.cluster import adjusted_rand_score
 from utils.rand_index import *
 from utils.crisp_obj import *
+import os
 
 def min_repeat(arr, K=10):
 	counter = np.zeros(K, dtype=int)
@@ -14,13 +15,9 @@ def min_repeat(arr, K=10):
 		counter[item] += 1
 	return counter.min()
 
-def save_result(obj, it):
-	np.savetxt('output/%s-G'%(it), obj['G'], fmt='%i')
-	np.savetxt('output/%s-W'%(it), obj['W'], fmt='%.7f')
-	np.savetxt('output/%s-U'%(it), obj['U'], fmt='%.7f')
-	np.savetxt('output/%s-performance'%(it), [obj['performance']], fmt='%.7f')
-
 def main():
+	path = 'output/question-1'
+	os.path.exists(path) or os.makedirs(path)
 
 	D_matrices = normalized_dissimilarity(
 		list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
@@ -41,28 +38,35 @@ def main():
 	for i in range(100):
 		print('# run %d'%(i+1))
 		out = MVFCMddV(D_matrices, K)
-		save_result(out, '%02d'%(i))
 
 		crisp = convert_crisp(out['U'])
 		crisp_vector = new_crisp(crisp)
-		if min_repeat(crisp_vector) < 10:
-			print('nao rolou')
-			continue
-		else:
-			print('rolouu')
-
-		if len(best_out) == 0 or out['performance'] < best_out['performance']:
+		if min_repeat(crisp_vector) >= 10 and (len(best_out) == 0 or out['performance'] < best_out['performance']):
 			best_out = out.copy()
-			save_result(best_out, 'best')
+			np.savetxt('%s/best-G'%(path), best_out['G'], fmt='%i')
+			np.savetxt('%s/best-W'%(path), best_out['W'], fmt='%.7f')
+			np.savetxt('%s/best-U'%(path), best_out['U'], fmt='%.7f')
+			np.savetxt('%s/best-J'%(path), best_out['J'], fmt='%.7f')
+			np.savetxt('%s/best-performance'%(path), [best_out['performance']], fmt='%.7f')
 
 	crisp = convert_crisp(best_out['U'])
+	np.savetxt('%s/crisp'%(path), crisp, fmt='%i')
+
 	crisp_vector = new_crisp(crisp)
-	print(crisp_obj(crisp_vector, K))
+	np.savetxt('%s/crisp-vector'%(path), crisp_vector, fmt='%i')
+
+	crisp_arr_obj = crisp_obj(crisp_vector, K)
+	f = open('%s/crisp-obj'%(path), 'w+')
+	for x in crisp_arr_obj:
+		f.write(str(x) + '\n')
+	f.close()
+
 	crisp_true = true_labels(n, K)
-	# np.savetxt('crisp_true',crisp_true, fmt='%i')
-	np.savetxt('crisp_vector',crisp_vector, fmt='%i')
-	print(crisp_vector)
-	print('Indice de Rand Corrigido', adjusted_rand_score(crisp_vector, crisp_true))
+	np.savetxt('%s/crisp-true'%(path), crisp_true, fmt='%i')
+
+	corrected_rand_index = adjusted_rand_score(crisp_vector, crisp_true)
+	print('Indice de Rand Corrigido: %.7f'%(corrected_rand_index))
+	np.savetxt('%s/corrected-rand-index'%(path), [corrected_rand_index], fmt='%.7f')
 
 if __name__ == '__main__':
 	np.random.seed(42)
