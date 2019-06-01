@@ -1,5 +1,5 @@
 import numpy as np
-from utils.fuzzy_partition import weighted_dist
+from .fuzzy_partition import weighted_dist
 
 
 # v= (G,W,U)
