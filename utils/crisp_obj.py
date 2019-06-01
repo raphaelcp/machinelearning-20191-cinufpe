@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 
 def crisp_obj(crisp, K):
 	obj_list = [[] for i in range(K)]
@@ -8,9 +8,4 @@ def crisp_obj(crisp, K):
 	return obj_list
 
 if __name__ == '__main__':
-	
-
-
-
-
-
+	pass

@@ -1,5 +1,5 @@
 import numpy as np
-from utils.convert_crisp import convert_crisp
+from .convert_crisp import convert_crisp
 from scipy.misc import comb
 
 def true_labels(n, K):
