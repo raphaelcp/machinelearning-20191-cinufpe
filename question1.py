@@ -4,6 +4,7 @@ from mvfcmddv import MVFCMddV
 from utils.convert_crisp import convert_crisp
 from utils.normalized_dissimilarity import normalized_dissimilarity
 from utils.convert_crisp import convert_crisp
+from sklearn.metrics.cluster import adjusted_rand_score
 from utils.rand_index import *
 from utils.crisp_obj import *
 

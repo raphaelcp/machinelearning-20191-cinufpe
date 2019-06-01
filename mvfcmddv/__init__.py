@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics.cluster import adjusted_rand_score
 from .initialization import *
 from .fuzzy_partition import fuzzy_matrix
 from .adequacy_function import adequacy
