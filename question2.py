@@ -6,13 +6,13 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
 from scipy.stats import wilcoxon
 import sys
-if not sys.warnoptions:
-    import warnings
-    warnings.simplefilter("ignore")
-
+import os
+import warnings
 
 def main():
-	np.random.seed(42)
+	path = 'output/question-2'
+	os.path.exists(path) or os.makedirs(path)
+
 	L = 3 #numero de views
 	K = 10 #numero de classes
 
@@ -20,19 +20,15 @@ def main():
 		list_files=('mfeat-fac', 'mfeat-fou', 'mfeat-kar')
 		# list_files=('mfeat-fac-test', 'mfeat-fou-test', 'mfeat-kar-test')
 	)
-	# print(D_matrices[0])
 
-	true_labels = np.recfromtxt('crisp_vector')
-	# true_labels = np.recfromtxt('data/preprocessed/true_labels.txt')
-
-	# print(true_labels)
+	true_labels = np.recfromtxt('output/question-1/crisp-vector')
+	# true_labels = np.recfromtxt('output/question-1/true-labels')
 
 	prob_priori = np.zeros(K)
 	for i in range(0,K):
 		prob_priori[i] = np.count_nonzero(true_labels==i) / true_labels.shape[0]
 
-	print(prob_priori)
-
+	np.savetxt('%s/prob-priori'%(path), prob_priori, fmt='%.7f')
 
 	#GRID SEARCH CROSS VALIDATION - ENCONTRAR MELHOR NUMERO DE VIZINHOS
 	kb_1 = KNeighborsClassifier()
@@ -110,8 +106,8 @@ def main():
 		#score dos ensembles
 		score_kb.append(np.equal(kb_ensemble, true_labels_test).sum() / true_labels_test.shape[0])
 
-	np.savetxt('score_gb',score_gb, fmt='%.3f')
-	np.savetxt('score_kb',score_kb, fmt='%.3f')
+	np.savetxt('%s/score-gb'%(path), score_gb, fmt='%.7f')
+	np.savetxt('%s/score-kb'%(path), score_kb, fmt='%.7f')
 
 	# Teste Wilcoxon
 	w, p = wilcoxon(score_gb, score_kb)
@@ -119,5 +115,9 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
+	np.random.seed(42)
 
+	if not sys.warnoptions:
+		warnings.simplefilter("ignore")
+
+	main()
