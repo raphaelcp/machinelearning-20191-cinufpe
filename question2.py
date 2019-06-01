@@ -4,8 +4,8 @@ from utils.normalized_dissimilarity import load_normalized
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
+from scipy.stats import wilcoxon
 import sys
-
 if not sys.warnoptions:
     import warnings
     warnings.simplefilter("ignore")
@@ -58,6 +58,8 @@ def main():
 
 
 	rskf = RepeatedStratifiedKFold(n_splits=10, n_repeats=30)
+	score_gb = []
+	score_kb = []
 
 	for train_index, test_index in rskf.split(D_matrices[0], true_labels):
 
@@ -70,11 +72,9 @@ def main():
 		# matrix = D_matrices[view]
 		# print(rskf.get_n_splits(true_labels))
 
-		gb_scores = []
-
-
 			# print('TRAIN: ', len(train_index))
 			# print('TEST: ', len(test_index))
+
 		#Classificador Bayesiano Gaussiano
 		gb_1 = GaussianNB()
 		gb_2 = GaussianNB()
@@ -89,10 +89,9 @@ def main():
 		pred_3 = gb_3.predict_proba(matrix_test_3)
 
 		gb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
-		# print(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3))
 
-		score = np.equal(gb_ensemble, true_labels_test).sum() / true_labels_test.shape[0]
-		print("%.5f"%score, end=' - ');
+		score_gb.append(np.equal(gb_ensemble, true_labels_test).sum() / true_labels_test.shape[0])
+
 
 		kb_1 = KNeighborsClassifier(n_neighbors=grid_1.best_params_['n_neighbors'])
 		kb_2 = KNeighborsClassifier(n_neighbors=grid_2.best_params_['n_neighbors'])
@@ -109,9 +108,14 @@ def main():
 		kb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
 
 		#score dos ensembles
-		score = np.equal(kb_ensemble, true_labels_test).sum() / true_labels_test.shape[0]
-		print("%.5f"%score);
+		score_kb.append(np.equal(kb_ensemble, true_labels_test).sum() / true_labels_test.shape[0])
 
+	np.savetxt('score_gb',score_gb, fmt='%.3f')
+	np.savetxt('score_kb',score_kb, fmt='%.3f')
+
+	# Teste Wilcoxon
+	w, p = wilcoxon(score_gb, score_kb)
+	print(w,p)
 
 
 if __name__ == '__main__':
