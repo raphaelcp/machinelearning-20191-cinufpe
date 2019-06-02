@@ -1,13 +1,21 @@
+import sys, os, warnings
 import numpy as np
+import seaborn as sns
+import scipy.stats
+import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
 from utils.normalized_dissimilarity import load_normalized
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
 from scipy.stats import wilcoxon
-import sys
-import os
-import warnings
+#Intervalo de confiança e estimativa pontual
+def mean_confidence_interval(data, confidence=0.95):
+	a = 1.0 * np.array(data)
+	n = len(a)
+	m, se = np.mean(a), scipy.stats.sem(a)
+	h = se * scipy.stats.t.ppf((1 + confidence) / 2., n-1)
+	return m, m-h, m+h
 
 def main():
 	path = 'output/question-2'
@@ -38,9 +46,9 @@ def main():
 	k_range = list(range(1,31))
 	param_grid = dict(n_neighbors=k_range)
 
-	grid_1 = GridSearchCV(kb_1, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
-	grid_2 = GridSearchCV(kb_2, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
-	grid_3 = GridSearchCV(kb_3, param_grid, cv=10, scoring='accuracy', n_jobs=-1)
+	grid_1 = GridSearchCV(kb_1, param_grid, cv=10, scoring='accuracy', n_jobs=6)
+	grid_2 = GridSearchCV(kb_2, param_grid, cv=10, scoring='accuracy', n_jobs=6)
+	grid_3 = GridSearchCV(kb_3, param_grid, cv=10, scoring='accuracy', n_jobs=6)
 
 	grid_1.fit(D_matrices[0], true_labels)
 	grid_2.fit(D_matrices[1], true_labels)
@@ -84,11 +92,13 @@ def main():
 		pred_2 = gb_2.predict_proba(matrix_test_2)
 		pred_3 = gb_3.predict_proba(matrix_test_3)
 
+		#Ensemble pela regra da soma
 		gb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
 
+		#Score do Ensemble
 		score_gb.append(np.equal(gb_ensemble, true_labels_test).sum() / true_labels_test.shape[0])
 
-
+		#Classificador KNN Bayesiano
 		kb_1 = KNeighborsClassifier(n_neighbors=grid_1.best_params_['n_neighbors'])
 		kb_2 = KNeighborsClassifier(n_neighbors=grid_2.best_params_['n_neighbors'])
 		kb_3 = KNeighborsClassifier(n_neighbors=grid_3.best_params_['n_neighbors'])
@@ -101,18 +111,47 @@ def main():
 		pred_2 = kb_2.predict_proba(matrix_test_2)
 		pred_3 = kb_3.predict_proba(matrix_test_3)
 
+		#Ensemble pela regra da soma
 		kb_ensemble = np.argmax(((1-L)*(prob_priori) + pred_1 + pred_2 + pred_3), axis=1)
-
 		#score dos ensembles
 		score_kb.append(np.equal(kb_ensemble, true_labels_test).sum() / true_labels_test.shape[0])
 
-	np.savetxt('%s/score-gb'%(path), score_gb, fmt='%.7f')
-	np.savetxt('%s/score-kb'%(path), score_kb, fmt='%.7f')
-
-	# Teste Wilcoxon
+	# Teste Wilcoxon nos 2 classificadores acima
 	w, p = wilcoxon(score_gb, score_kb)
 	print(w,p)
 
+	#Esatistica
+	stats_results = np.array([
+		mean_confidence_interval(score_gb),
+		mean_confidence_interval(score_kb),
+		w,
+		p])
+
+	np.savetxt('%s/score-gb'%(path), score_gb, fmt='%.7f')
+	np.savetxt('%s/score-kb'%(path), score_kb, fmt='%.7f')
+	f = open('%s/stats-results'%(path), 'w+')
+	for x in stats_results:
+		f.write(str(x) + '\n')
+	f.close()
+
+	# #Histograma
+	# Density Plot and Histogram of all arrival delays
+	# f, axes = plt.subplots(1, 2, figsize=(7, 7), sharex=False, sharey=True)
+	# sns.distplot(score_kb, hist=True, kde=True, color="skyblue", ax=axes[0])
+	# sns.distplot(score_gb, hist=True, kde=True, color="olive", ax=axes[1])
+	# f.tight_layout()
+	# f.savefig('%s/hists.png'%(path))
+
+	hist_skb  = sns.distplot(score_kb, hist=True, kde=True,
+		bins=int(50), color = 'green',
+		hist_kws={'edgecolor':'black'},
+		kde_kws={'linewidth': 3})
+	fig1 = hist_skb.get_figure()
+
+	hist_sgb  = sns.distplot(score_gb, hist=True, kde=True,
+		bins=int(50), hist_kws={'edgecolor':'red'},
+		kde_kws={'linewidth': 3})
+	hist_sgb.figure.savefig('%s/hist_sgb.png'%(path))
 
 if __name__ == '__main__':
 	np.random.seed(42)
